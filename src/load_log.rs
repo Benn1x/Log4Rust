@@ -6,15 +6,25 @@ use serde_derive::Deserialize;
 use crate::log::Type;
 use crate::date::{year, month, day, hour, second, minute};
 
+///Into this struct the Config will be parsed
+/// # Explanations
+/// application_version: Is the current Version of the application
+/// application_name: Is the name of the application
+/// formatting: in this format y is the Year m is the Month d is the Day h is the Hour M is the Minute s is the Second and l is the logging Message
+/// stdout: This defines where the Log is written to there are 3 Options: console, this logs the to the console, log, this logs into an log.log file, and both this
+/// filename: This is the name of the log file, there is no need to add the log
+/// logs into the console as well as into the log.log file
 #[derive(Deserialize)]
 pub struct Config{
-    application_version: String,
-    application_name: String,
-    formatting: String,
-    stdout: String,
+    pub application_version: String,
+    pub application_name: String,
+    pub formatting: String,
+    pub stdout: String,
+    pub filename: String
 }
 
 impl Config {
+    ///Read the Config and if it is not set it will create one
     pub fn new()->Self{
         let filename = "config.toml";
         let contents = match read_to_string(filename) {
@@ -27,11 +37,13 @@ impl Config {
                 file.write(b"application_version = '*'
 application_name = ''
 formatting = 'y/m/d h:M:s l'
-stdout = 'both'").unwrap();
+stdout = 'both'
+filename = 'log'").unwrap();
                 "application_version = '*'
 application_name = ''
 formatting = 'y/m/d h:M:s l'
-stdout = 'both'".to_string()
+stdout = 'both'
+filename = 'log'".to_string()
 
             }
         };
@@ -47,7 +59,7 @@ stdout = 'both'".to_string()
                 exit(1);
             }
         };
-        Self{application_name: data.application_name, application_version: data.application_version, formatting: data.formatting, stdout: data.stdout}
+        Self{application_name: data.application_name, application_version: data.application_version, formatting: data.formatting, stdout: data.stdout, filename: data.filename}
     }
 }
 
@@ -76,9 +88,6 @@ impl Formatting for String{
     }
     fn is_type(&self) -> Type {
         let format = Config::new().stdout.to_ascii_lowercase();
-        let console = "console".to_string();
-        let log = "log".to_string();
-        let both = "both".to_string();
         match format.as_str() {
             "console" => Type::Terminal(self.clone()),
             "log" => Type::Log(self.clone()),

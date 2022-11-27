@@ -1,7 +1,7 @@
 use crate::date;
 use std::fs::OpenOptions;
 use std::io::Write;
-use crate::load_log::Formatting;
+use crate::load_log::{Config, Formatting};
 
 pub enum Type{
     Terminal(String),
@@ -15,27 +15,13 @@ pub enum Log{
     Error,
 }
 
-pub fn log(logs: Log, log_msg: String){
-    match log_msg.is_type(){
-        Type::Terminal(string) => {
-            print_log(string, logs);
-        }
-        Type::Log(string) =>{
-            write_log( string.format());
-        }
-        Type::Bothe(string) =>{
-            print_log( string.clone(), logs);
-            write_log(string.format());
-        }
-    }
-}
 pub fn write_log(logMsg: String){
     match  OpenOptions::new()
         .write(true)
         .append(true)
         .create(true)
         .read(true)
-        .open("log.log")
+        .open(format!("{}.log",Config::new().filename))
         {
         Ok(mut e) =>{
             match e.write_all(logMsg.as_bytes()){

@@ -1,9 +1,15 @@
 use chrono::prelude::*;
 
+/// Returns the Time as an formatted String
+/// # Examples
+///```
+/// let Time = date();
+/// assert_eq!(Time, chrono::Local::now().format("%d/%m/%Y %H:%M:%S"))
+/// ```
 pub fn date()-> String{
-
     format!("{}",chrono::Local::now().format("%d/%m/%Y %H:%M:%S"))
 }
+
 
 pub fn year() -> String{
     chrono::Local::now().year().to_string()
