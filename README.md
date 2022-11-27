@@ -25,3 +25,8 @@ fn main() -> (){
  }
  ```
 This example would Log The words "This is an Info" as an Info
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1239eb3 (Adding Documentation and FIlename in the Config)
