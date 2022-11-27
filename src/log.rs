@@ -15,8 +15,8 @@ pub enum Log{
     Error,
 }
 
-pub fn log(logs: Log, types: Type){
-    match types{
+pub fn log(logs: Log, log_msg: String){
+    match log_msg.is_type(){
         Type::Terminal(string) => {
             print_log(string, logs);
         }
@@ -55,8 +55,8 @@ pub fn write_log(logMsg: String){
 
 pub fn print_log(string: String, logs: Log){
     match logs {
-        Log::Info => println!("{}: {}\n", date::date(), string),
-        Log::Warning => println!("\x1b[33m{}: {}\x1b[0m\n", date::date(), string),
-        Log::Error => println!("\x1b[31m{}: {}\x1b[0m\n", date::date(), string),
+        Log::Info => println!("{}\n", string.format()),
+        Log::Warning => println!("\x1b[33m{}\x1b[0m\n", string.format()),
+        Log::Error => println!("\x1b[31m{}\x1b[0m\n",  string.format()),
     }
 }

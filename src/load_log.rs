@@ -3,7 +3,7 @@ use std::fs::read_to_string;
 use std::io::Write;
 use std::process::exit;
 use serde_derive::Deserialize;
-use crate::date;
+use crate::log::Type;
 use crate::date::{year, month, day, hour, second, minute};
 
 #[derive(Deserialize)]
@@ -11,6 +11,7 @@ pub struct Config{
     application_version: String,
     application_name: String,
     formatting: String,
+    stdout: String,
 }
 
 impl Config {
@@ -25,10 +26,12 @@ impl Config {
                 let mut file= fs::File::create(filename).unwrap();
                 file.write(b"application_version = '*'
 application_name = ''
-formatting = 'y/m/d h:M:s l'").unwrap();
+formatting = 'y/m/d h:M:s l'
+stdout = 'both'").unwrap();
                 "application_version = '*'
 application_name = ''
-formatting = 'y/m/d h:M:s l'".to_string()
+formatting = 'y/m/d h:M:s l'
+stdout = 'both'".to_string()
 
             }
         };
@@ -44,13 +47,14 @@ formatting = 'y/m/d h:M:s l'".to_string()
                 exit(1);
             }
         };
-        Self{application_name: data.application_name, application_version: data.application_version, formatting: data.formatting}
+        Self{application_name: data.application_name, application_version: data.application_version, formatting: data.formatting, stdout: data.stdout}
     }
 }
 
 
 pub trait Formatting {
     fn format(&self)->String;
+    fn is_type(&self) -> Type;
 }
 
 impl Formatting for String{
@@ -69,5 +73,17 @@ impl Formatting for String{
         }).collect();
         format!("{}\n",formatted)
 
+    }
+    fn is_type(&self) -> Type {
+        let format = Config::new().stdout.to_ascii_lowercase();
+        let console = "console".to_string();
+        let log = "log".to_string();
+        let both = "both".to_string();
+        match format.as_str() {
+            "console" => Type::Terminal(self.clone()),
+            "log" => Type::Log(self.clone()),
+            "both" => Type::Bothe(self.clone()),
+            _ => Type::Log(self.clone())
+        }
     }
 }
